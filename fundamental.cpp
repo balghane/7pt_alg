@@ -12,6 +12,7 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/xfeatures2d.hpp"
+#include "opencv2/calib3d.hpp"
 using namespace cv;
 using namespace cv::xfeatures2d;
 void readme();
@@ -55,34 +56,33 @@ int main( int argc, char** argv )
   }
 
   //-- Step 3: Calculate fundamental matrix
+
+  // RANSAC to find best fundamental matrix
   srand(time(NULL));
   unsigned int n_matches = good_matches.size();
   unsigned int its = 1;
-  std::cout << std::rand() % n_matches << std::endl;
-
-  // set up data structures to be used iteratively
-  Mat A(7,9,CV_32F, cvScalar(0.));
-  std::vector< Mat > rows;
-  for (unsigned int i = 0; i < 7; i++)
-  {
-    rows.push_back(A.rowRange(i,i+1));
-  }
-
-  // RANSAC to find best fundamental matrix
+  Mat pts1(7,2,CV_32F);
+  Mat pts2(7,2,CV_32F);
   for (unsigned int it = 0 ; it < its ; it++)
   {
-    // select matches and set up matrix
+    // select matches and set up matrices
     for (unsigned int i = 0; i < 7; i++)
     {
       DMatch* this_match = &good_matches[rand() % n_matches];
-      float data[9] = {1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f};
-      Mat row = Mat(1,9,CV_32F, data);
-      row.copyTo(rows[i]);
+      Point2f pt1 = keypoints_1[this_match->queryIdx].pt;
+      Point2f pt2 = keypoints_2[this_match->trainIdx].pt;
+      pts1.at<float>(i,0) = pt1.x;
+      pts1.at<float>(i,1) = pt1.y;
+      pts2.at<float>(i,0) = pt2.x;
+      pts2.at<float>(i,1) = pt2.y;
     }
 
-    // get matrix based on these matches
+    // compute F based on those matches
+    Mat F(3,3,CV_32F);
+    run7Point(pts1, pts2, F);
 
     // compute number of inliers
+
   }
   
 }
