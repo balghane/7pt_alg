@@ -335,6 +335,8 @@ int main( int argc, char** argv )
   std::cout << "best F: " << best_F << std::endl;
   std::cout << best_inliers << " out of " << n_matches << std::endl;
 
+  /* 
+  // for plotting!
   std::vector<KeyPoint> inliers_1 = std::vector<KeyPoint>();
   std::vector<KeyPoint> inliers_2 = std::vector<KeyPoint>();
   std::vector<DMatch> inlier_matches = std::vector<DMatch>();
@@ -392,7 +394,13 @@ int main( int argc, char** argv )
                std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
   imshow( "Good Matches", img_matches );
   waitKey(0);
-  
+  /*
+
+  // Let's do autocalibration to get a static K
+  // use F and K to get E
+  // get R and t from E
+  // yay we're done
+
 }
 /*
  * @function readme
